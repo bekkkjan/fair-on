@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Ariza topshirish - {{ vacancy.title }} - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Ariza topshirish: {{ vacancy.title }}</h2>
+            <p class="lead">{{ vacancy.employer.company_name }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'jobs:candidate_vacancy_detail' pk=vacancy.id %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i> Vakansiya sahifasiga qaytish
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-paper-plane me-2"></i> Arizani yuborish</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">Iltimos, ariza uchun zarur bo'lgan hujjatlarni yuklang. Hujjatlarni PDF formatida yuklashingiz tavsiya etiladi.</p>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.diploma|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.certificates|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.work_history|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.personal_info|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane me-2"></i> Arizani topshirish
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Ariza haqida ma'lumot</h5>
+                </div>
+                <div class="card-body">
+                    <p>Arizani topshirgandan so'ng quyidagi bosqichlardan o'tasiz:</p>
+                    <ol>
+                        <li class="mb-2">Kasbiy test (soha bo'yicha bilimlar)</li>
+                        <li class="mb-2">Psixologik test (shaxsiy sifatlar)</li>
+                        <li class="mb-2">Korrupsiyaga moyillik testi</li>
+                    </ol>
+                    <p class="mb-0 text-muted small">Barcha testlarni muvaffaqiyatli topshirganingizdan so'ng, natijalaringiz ish beruvchiga ko'rsatiladi.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Vakansiya ma'lumotlari</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2"><strong>Lavozim:</strong> {{ vacancy.title }}</div>
+                    <div class="mb-2"><strong>Tashkilot:</strong> {{ vacancy.employer.company_name }}</div>
+                    <div class="mb-2"><strong>Kategoriya:</strong> {{ vacancy.category.name }}</div>
+                    <div class="mb-2"><strong>Joylashuv:</strong> {{ vacancy.location }}</div>
+                    <div><strong>Maosh:</strong> {{ vacancy.salary_min }} - {{ vacancy.salary_max }} so'm</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

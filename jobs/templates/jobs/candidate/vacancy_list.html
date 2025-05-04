@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vakansiyalar - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <!-- Filtr paneli -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-filter me-2"></i> Filtrlar</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" action="{% url 'jobs:vacancy_list_public' %}">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Kategoriya</label>
+                        <select name="category" id="category" class="form-select">
+                            <option value="">Barcha kategoriyalar</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"i" %}selected{% endif %}>{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Joylashuv</label>
+                        <input type="text" name="location" id="location" class="form-control" value="{{ request.GET.location|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="salary_min" class="form-label">Minimal maosh</label>
+                        <input type="number" name="salary_min" id="salary_min" class="form-control" value="{{ request.GET.salary_min|default:'' }}">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Qo'llash</button>
+                        <a href="{% url 'jobs:vacancy_list_public' %}" class="btn btn-outline-secondary">Filtlarni tozalash</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <!-- Vakansiyalar ro'yxati -->
+        <h2 class="mb-4">Mavjud vakansiyalar</h2>
+
+        {% if vacancies %}
+            <div class="row">
+                {% for vacancy in vacancies %}
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ vacancy.title }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ vacancy.employer.company_name }}</h6>
+                                <div class="mb-3">
+                                    <span class="badge bg-info">{{ vacancy.category.name }}</span>
+                                </div>
+                                <p class="card-text">
+                                    <i class="fas fa-map-marker-alt text-primary"></i> {{ vacancy.location }}<br>
+                                    <i class="fas fa-money-bill-wave text-primary"></i> {{ vacancy.salary_min }} - {{ vacancy.salary_max }} so'm<br>
+                                    <i class="fas fa-calendar-alt text-primary"></i> {{ vacancy.created_at|date:"d.m.Y" }}
+                                </p>
+                                <div class="mt-auto">
+                                    <a href="{% url 'jobs:candidate_vacancy_detail' pk=vacancy.id %}" class="btn btn-outline-primary">Batafsil ma'lumot</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Sahifalash (pagination) -->
+            {% if is_paginated %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Hozircha vakansiyalar mavjud emas yoki sizning filtringizga mos vakansiyalar topilmadi.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

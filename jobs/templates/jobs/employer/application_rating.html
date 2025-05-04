@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nomzodlar reytingi - {{ vacancy.title }} - CorruptiNO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        height: 400px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Nomzodlar reytingi: {{ vacancy.title }}</h2>
+        <p class="lead">{{ vacancy.employer.company_name }}</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'jobs:vacancy_applications' vacancy_id=vacancy.id %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i> Arizalar ro'yxatiga qaytish
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i> Nomzodlar reytingi</h5>
+            </div>
+            <div class="card-body">
+                {% if top_applications %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>No</th>
+                                    <th>F.I.O</th>
+                                    <th>Kasbiy test</th>
+                                    <th>Psixologik test</th>
+                                    <th>Korrupsiyaga qarshi test</th>
+                                    <th>Umumiy ball</th>
+                                    <th>Holati</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in top_applications %}
+                                    <tr {% if forloop.counter <= 3 %}class="table-success"{% endif %}>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ application.candidate.user.full_name }}</td>
+                                        <td>{{ application.professional_score }}</td>
+                                        <td>{{ application.psychological_score }}</td>
+                                        <td>{{ application.corruption_score }}</td>
+                                        <td><strong>{{ application.total_score }}</strong></td>
+                                        <td>
+                                            {% if application.status == 'applied' %}
+                                                <span class="badge bg-secondary">Ariza topshirilgan</span>
+                                            {% elif application.status == 'testing' %}
+                                                <span class="badge bg-warning">Testdan o'tish jarayonida</span>
+                                            {% elif application.status == 'completed' %}
+                                                <span class="badge bg-info">Testlar yakunlangan</span>
+                                            {% elif application.status == 'reviewed' %}
+                                                <span class="badge bg-primary">Ko'rib chiqilgan</span>
+                                            {% elif application.status == 'accepted' %}
+                                                <span class="badge bg-success">Qabul qilingan</span>
+                                            {% elif application.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rad etilgan</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'jobs:employer_application_detail' pk=application.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> Ko'rish
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-success mt-4">
+                        <i class="fas fa-trophy me-2"></i> <strong>Tavsiya:</strong> Yuqori natija ko'rsatgan birinchi 3 ta nomzodni ishga qabul qilish tavsiya etiladi.
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Hozircha barcha testlarni yakunlagan nomzodlar mavjud emas.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if top_applications %}
+    <div class="row">
+        <!-- Gorizontal bar chart uchun -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Top 5 nomzodlarning umumiy ballari</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if top_applications %}
+            // Ma'lumotlarni saqlash
+            const applications = [
+                {% for app in top_applications|slice:":5" %}
+                {
+                    name: "{{ app.candidate.user.full_name }}",
+                    professionalScore: {{ app.professional_score }},
+                    psychologicalScore: {{ app.psychological_score }},
+                    corruptionScore: {{ app.corruption_score }},
+                    totalScore: {{ app.total_score }}
+                },
+                {% endfor %}
+            ];
+
+            // Bar chart - umumiy ball
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: applications.map(app => app.name),
+                    datasets: [{
+                        label: 'Umumiy ball',
+                        data: applications.map(app => app.totalScore),
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Radar chart - top 3 nomzod
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Kasbiy test', 'Psixologik test', 'Korrupsiyaga qarshi test'],
+                    datasets: [
+                        {% for app in top_applications|slice:":3" %}
+                        {
+                            label: "{{ app.candidate.user.full_name }}",
+                            data: [
+                                {{ app.professional_score }},
+                                {{ app.psychological_score }},
+                                {{ app.corruption_score }}
+                            ],
+                            backgroundColor: 'rgba({{ forloop.counter|add:50 }}, {{ forloop.counter|add:100 }}, {{ forloop.counter|add:150 }}, 0.2)',
+                            borderColor: 'rgba({{ forloop.counter|add:50 }}, {{ forloop.counter|add:100 }}, {{ forloop.counter|add:150 }}, 1)',
+                            borderWidth: 2
+                        },
+                        {% endfor %}
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Pie chart - o'rtacha natijalar
+            let avgProfessional = 0;
+            let avgPsychological = 0;
+            let avgCorruption = 0;
+
+            applications.forEach(app => {
+                avgProfessional += app.professionalScore;
+                avgPsychological += app.psychologicalScore;
+                avgCorruption += app.corruptionScore;
+            });
+
+            avgProfessional = Math.round(avgProfessional / applications.length);
+            avgPsychological = Math.round(avgPsychological / applications.length);
+            avgCorruption = Math.round(avgCorruption / applications.length);
+
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Kasbiy test', 'Psixologik test', 'Korrupsiyaga qarshi test'],
+                    datasets: [{
+                        data: [avgProfessional, avgPsychological, avgCorruption],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Line chart - barcha nomzodlar
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: applications.map(app => app.name),
+                    datasets: [
+                        {
+                            label: 'Kasbiy test',
+                            data: applications.map(app => app.professionalScore),
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Psixologik test',
+                            data: applications.map(app => app.psychologicalScore),
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Korrupsiyaga qarshi test',
+                            data: applications.map(app => app.corruptionScore),
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            borderWidth: 2,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        {% endif %}
+    });
+</script>
+{% endblock %}
+{% endblock %}
+-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Radar chart uchun -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Top 3 nomzodlarning test natijalari</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Pie chart uchun -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Test komponentlari bo'yicha o'rtacha natijalar</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Line chart uchun -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Barcha nomzodlar natijalari</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart

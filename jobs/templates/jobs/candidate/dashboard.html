@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nomzod Dashboard - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Dashboard</h2>
+
+    <div class="card">
+        <div class="card-header">
+            Mening Arizalarim
+        </div>
+        <div class="card-body">
+            {% if applications %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Vakansiya</th>
+                        <th>Holat</th>
+                        <th>Testlar</th>
+                        <th>Natijalar</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in applications %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ application.vacancy.title }}</td>
+                        <td>{{ application.get_status_display }}</td>
+                        <td>
+                            <span class="d-block">
+                                Kasbiy:
+                                {% if application.professional_score > 0 %}
+                                    <span class="badge bg-success">Topshirildi</span>
+                                {% else %}
+                                    <a href="{% url 'jobs:take_test' application_id=application.id test_type='professional' %}" class="badge bg-warning text-decoration-none">Topshirish</a>
+                                {% endif %}
+                            </span>
+                            <span class="d-block">
+                                Psixologik:
+                                {% if application.psychological_score > 0 %}
+                                    <span class="badge bg-success">Topshirildi</span>
+                                {% else %}
+                                    <a href="{% url 'jobs:take_test' application_id=application.id test_type='psychological' %}" class="badge bg-warning text-decoration-none">Topshirish</a>
+                                {% endif %}
+                            </span>
+                            <span class="d-block">
+                                Korrupsiya:
+                                {% if application.corruption_score > 0 %}
+                                    <span class="badge bg-success">Topshirildi</span>
+                                {% else %}
+                                    <a href="{% url 'jobs:take_test' application_id=application.id test_type='corruption' %}" class="badge bg-warning text-decoration-none">Topshirish</a>
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            {% if application.total_score %}
+                                <span class="badge bg-primary">Umumiy: {{ application.total_score }}</span>
+                            {% else %}
+                                <span class="text-muted">Topshirilmagan</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'jobs:application_detail' pk=application.id %}" class="btn btn-sm btn-outline-primary">Batafsil</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="text-muted">Siz hali hech qanday ariza topshirmagansiz.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

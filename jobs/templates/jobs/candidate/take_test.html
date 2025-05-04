@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ test_type|title }} test - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>{{ test_type|title }} test topshirish</h2>
+        <p class="lead">Vakansiya: {{ application.vacancy.title }} - {{ application.vacancy.employer.company_name }}</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'jobs:application_detail' pk=application.id %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i> Arizaga qaytish
+        </a>
+    </div>
+</div>
+
+{% if already_taken %}
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle me-2"></i> Siz allaqachon bu testni topshirgansiz!
+        <hr>
+        <a href="{% url 'jobs:application_detail' pk=application.id %}" class="btn btn-primary">Arizani ko'rish</a>
+    </div>
+{% else %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Savol {{ current_question }} / {{ total_questions }}</h5>
+            <p class="card-text">{{ question.text }}</p>
+
+            <form method="post" action="{% url 'jobs:take_test' application_id=application.id test_type=test_type %}">
+                {% csrf_token %}
+                <input type="hidden" name="question_id" value="{{ question.id }}">
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Keyingi savol</button>
+            </form>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

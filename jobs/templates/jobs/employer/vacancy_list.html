@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vakansiyalar - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Vakansiyalar</h2>
+            <p class="lead">{{ user.employer_profile.company_name }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'jobs:vacancy_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Yangi vakansiya e'lon qilish
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i> Vakansiyalar ro'yxati</h5>
+        </div>
+        <div class="card-body">
+            {% if vacancies %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Lavozim</th>
+                                <th>Kategoriya</th>
+                                <th>Maosh</th>
+                                <th>Joylashuv</th>
+                                <th>Sana</th>
+                                <th>Holati</th>
+                                <th>Arizalar</th>
+                                <th>Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vacancy in vacancies %}
+                                <tr>
+                                    <td>{{ vacancy.title }}</td>
+                                    <td>{{ vacancy.category.name }}</td>
+                                    <td>{{ vacancy.salary_min }} - {{ vacancy.salary_max }}</td>
+                                    <td>{{ vacancy.location }}</td>
+                                    <td>{{ vacancy.created_at|date:"d.m.Y" }}</td>
+                                    <td>{% if vacancy.is_active %}<span class="badge bg-success">Faol</span>{% else %}<span class="badge bg-secondary">Nofaol</span>{% endif %}</td>
+                                    <td><a href="{% url 'jobs:vacancy_applications' vacancy_id=vacancy.id %}" class="btn btn-sm btn-outline-primary">{{ vacancy.applications.count }}</a></td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'jobs:vacancy_update' pk=vacancy.id %}" class="btn btn-sm btn-outline-info" title="Tahrirlash">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'jobs:vacancy_delete' pk=vacancy.id %}" class="btn btn-sm btn-outline-danger" title="O'chirish">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            <a href="{% url 'jobs:application_rating' vacancy_id=vacancy.id %}" class="btn btn-sm btn-outline-success" title="Reytinglar">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>Hozircha vakansiyalar mavjud emas. Yangi vakansiya e'lon qilish uchun yuqoridagi tugmadan foydalaning.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

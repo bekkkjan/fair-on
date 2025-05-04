@@ -1,0 +1,128 @@
+/* CorruptiNO asosiy CSS fayli */
+
+/* Umumiy stillar */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Navbar stillar */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Button stillar */
+.btn-primary {
+    background-color: #2b6cb0;
+    border-color: #2b6cb0;
+}
+
+.btn-primary:hover {
+    background-color: #1e4b8d;
+    border-color: #1e4b8d;
+}
+
+.btn-outline-primary {
+    color: #2b6cb0;
+    border-color: #2b6cb0;
+}
+
+.btn-outline-primary:hover {
+    background-color: #2b6cb0;
+    border-color: #2b6cb0;
+}
+
+/* Card stillar */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    border: none;
+}
+
+.card-header {
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.card-header.bg-primary {
+    background-color: #2b6cb0 !important;
+}
+
+/* Form stillar */
+.form-control:focus {
+    border-color: #2b6cb0;
+    box-shadow: 0 0 0 0.25rem rgba(43, 108, 176, 0.25);
+}
+
+/* Alert stillar */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+/* Badge stillar */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+    border-radius: 6px;
+}
+
+/* Footer stillar */
+footer {
+    margin-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+footer a {
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Dashboard stillar */
+.dashboard-card {
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card {
+    border-left: 4px solid #2b6cb0;
+}
+
+/* Vakansiya stillar */
+.vacancy-badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 500;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.375rem;
+}
+
+/* Test topshirish sahifasi stillar */
+.form-check-input:checked {
+    background-color: #2b6cb0;
+    border-color: #2b6cb0;
+}
+
+/* Responsive stillar */
+@media (max-width: 768px) {
+    .text-md-end {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+}

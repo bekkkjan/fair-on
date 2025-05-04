@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAIR ON - Korrupsiyaga yo'q deymiz!{% endblock %}
+
+{% block content %}
+    <!-- Bosh banner -->
+    <div class="bg-primary text-white p-5 rounded-3 mb-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 fw-bold">FAIR ON</h1>
+                    <p class="fs-4">Davlat tashkilotlariga xodimlarni qabul qilishning shaffof mexanizmini yaratish orqali korrupsiya va tanish-bilishchilikka barham berish loyihasi</p>
+                    <div class="mt-4">
+                        {% if user.is_authenticated %}
+                            {% if user.user_type == 'employer' %}
+                                <a href="{% url 'jobs:employer_dashboard' %}" class="btn btn-light btn-lg">Boshqaruv paneli</a>
+                            {% elif user.user_type == 'candidate' %}
+                                <a href="{% url 'jobs:candidate_dashboard' %}" class="btn btn-light btn-lg">Mening arizalarim</a>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'accounts:candidate_register' %}" class="btn btn-light btn-lg me-2">Nomzod sifatida ro'yxat</a>
+                            <a href="{% url 'accounts:employer_register' %}" class="btn btn-outline-light btn-lg">Ish beruvchi sifatida ro'yxat</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4 d-none d-md-block">
+                    <img src="{% static 'images/corruption_no.png' %}" alt="FAIR ON" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loyiha afzalliklari -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Loyihaning afzalliklari</h2>
+            <p class="lead">Ishga qabul qilish jarayonidagi shaffoflik va adolatni ta'minlash</p>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                    <h4 class="card-title">Korrupsiyaga qarshi kurash</h4>
+                    <p class="card-text">Ishga qabul qilish jarayonlarini shaffof va oshkora tashkil etish orqali korrupsiyaga yo'l qo'ymaslik</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                    <h4 class="card-title">Samarali baholash</h4>
+                    <p class="card-text">Nomzodlarni kasbiy bilimlarini, psixologik sifatlarini va korrupsiyaga moyilligini ilmiy asoslangan testlar orqali baholash</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+                    <h4 class="card-title">Adolatli tanlov</h4>
+                    <p class="card-text">Eng munosib nomzodlarni tanish-bilishchilik va subyektiv omillardan holi holda tanlash imkoniyati</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- So'nggi vakansiyalar -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>So'nggi vakansiyalar</h2>
+            <p class="lead">Eng so'nggi e'lon qilingan ish o'rinlari</p>
+        </div>
+
+        {% if latest_vacancies %}
+            {% for vacancy in latest_vacancies %}
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vacancy.title }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ vacancy.employer.company_name }}</h6>
+                            <p class="card-text">
+                                <i class="fas fa-map-marker-alt text-primary"></i> {{ vacancy.location }}<br>
+                                <i class="fas fa-money-bill-wave text-primary"></i> {{ vacancy.salary_min }} - {{ vacancy.salary_max }} so'm
+                            </p>
+                            <a href="{% url 'jobs:candidate_vacancy_detail' pk=vacancy.id %}" class="btn btn-outline-primary">Batafsil ma'lumot</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="col-12 text-center mt-3">
+                <a href="{% url 'jobs:vacancy_list_public' %}" class="btn btn-primary">Barcha vakansiyalarni ko'rish</a>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <p>Hozircha vakansiyalar mavjud emas. Tez orada yangi ish o'rinlari e'lon qilinadi.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Kategoriyalar -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Kategoriyalar bo'yicha vakansiyalar</h2>
+            <p class="lead">Eng ko'p vakansiyalar e'lon qilingan sohalar</p>
+        </div>
+
+        {% if categories %}
+            {% for category in categories %}
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <p class="card-text">{{ category.vacancy_count }} ta vakansiya</p>
+                            <a href="{% url 'jobs:vacancy_list_public' %}?category={{ category.id }}" class="btn btn-outline-primary">Vakansiyalarni ko'rish</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <p>Hozircha kategoriyalar mavjud emas.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Afzalliklar -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Nima uchun CorruptiNO?</h2>
+            <p class="lead">Bizning platformamizning afzalliklari</p>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle fa-2x text-primary"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5>Shaffof ishga qabul qilish</h5>
+                    <p>Har bir nomzod vakansiya talablariga mos kelishi bo'yicha tekshiriladi. Jarayon to'liq shaffof va nazoratli.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle fa-2x text-primary"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5>Kompleks baholash</h5>
+                    <p>Nomzodlar uchta yo'nalishda baholanadi: kasbiy bilim, psixologik sifatlar va korrupsiyaga moyillik.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle fa-2x text-primary"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5>Ilmiy asoslangan testlar</h5>
+                    <p>Barcha testlar zamonaviy ilmiy metodlar asosida tuzilgan va nomzodning to'liq qobiliyatlarini aniqlashga qaratilgan.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle fa-2x text-primary"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5>Hujjatlar va natijalarning vizualizatsiyasi</h5>
+                    <p>Barcha test natijalari jadvallar va diagrammalar orqali vizuallashtiriladi, bu esa qaror qabul qilishni osonlashtiradi.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="bg-light p-5 rounded-3 text-center mb-5">
+        <h2>Bugun ro'yxatdan o'ting!</h2>
+        <p class="lead">Ishga qabul qilish jarayonini shaffof va adolatli qilishga o'z hissangizni qo'shing.</p>
+        <div class="mt-4">
+            {% if user.is_authenticated %}
+                {% if user.user_type == 'employer' %}
+                    <a href="{% url 'jobs:vacancy_create' %}" class="btn btn-primary btn-lg">Vakansiya e'lon qilish</a>
+                {% elif user.user_type == 'candidate' %}
+                    <a href="{% url 'jobs:vacancy_list_public' %}" class="btn btn-primary btn-lg">Vakansiyalarni ko'rish</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'accounts:employer_register' %}" class="btn btn-primary btn-lg me-2">Ish beruvchi sifatida ro'yxat</a>
+                <a href="{% url 'accounts:candidate_register' %}" class="btn btn-primary btn-lg">Nomzod sifatida ro'yxat</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

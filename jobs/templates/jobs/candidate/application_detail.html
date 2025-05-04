@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5>Ariza tafsilotlari</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Foydalanuvchi:</strong> {{ application.user.get_full_name }}</p>
+            <p><strong>Vakansiya:</strong> {{ application.vacancy.title }}</p>
+            <p><strong>Rezyume:</strong> <a href="{{ application.cv.url }}" target="_blank">Yuklab olish</a></p>
+            <p><strong>Qo‘shimcha hujjat:</strong> <a href="{{ application.additional_document.url }}" target="_blank">Yuklab olish</a></p>
+            <hr>
+            <h5>Test natijalari:</h5>
+            <ul>
+                <li><strong>Kasbiy:</strong> {{ application.professional_score }}</li>
+                <li><strong>Psixologik:</strong> {{ application.psychological_score }}</li>
+                <li><strong>Korrupsiyaviy:</strong> {{ application.corruption_score }}</li>
+                <li><strong>Umumiy ball:</strong> {{ application.total_score }}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

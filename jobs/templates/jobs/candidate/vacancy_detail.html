@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ vacancy.title }} - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>{{ vacancy.title }}</h2>
+            <p class="text-muted">{{ vacancy.employer.company_name }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'jobs:vacancy_list_public' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i> Vakansiyalar ro'yxatiga qaytish
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Vakansiya haqida</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Tashkilot:</div>
+                        <div class="col-md-9">{{ vacancy.employer.company_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Kategoriya:</div>
+                        <div class="col-md-9">{{ vacancy.category.name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Joylashuv:</div>
+                        <div class="col-md-9">{{ vacancy.location }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Maosh:</div>
+                        <div class="col-md-9">{{ vacancy.salary_min }} - {{ vacancy.salary_max }} so'm</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">E'lon qilingan sana:</div>
+                        <div class="col-md-9">{{ vacancy.created_at|date:"d.m.Y" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Talablar:</div>
+                        <div class="col-md-9">{{ vacancy.requirements|linebreaks }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i> Arizani topshirish</h5>
+                </div>
+                <div class="card-body">
+                    {% if has_applied %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Siz bu vakansiyaga allaqachon ariza topshirgansiz.
+                        </div>
+                        <a href="{% url 'jobs:application_detail' pk=application.id %}" class="btn btn-primary d-block">
+                            <i class="fas fa-eye me-2"></i> Arizani ko'rish
+                        </a>
+                    {% else %}
+                        <p>Ushbu vakansiyaga ariza topshirish uchun quyidagi tugmani bosing:</p>
+                        <a href="{% url 'jobs:application_create' vacancy_id=vacancy.id %}" class="btn btn-success d-block">
+                            <i class="fas fa-paper-plane me-2"></i> Ariza topshirish
+                        </a>
+                        <hr>
+                        <p class="small text-muted">Ariza topshirgandan so'ng quyidagi testlarni topshirishingiz kerak bo'ladi:</p>
+                        <ul class="small text-muted">
+                            <li>Kasbiy test (soha bo'yicha)</li>
+                            <li>Psixologik test</li>
+                            <li>Korrupsiyaga moyillik testi</li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-building me-2"></i> Tashkilot haqida</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>{{ vacancy.employer.company_name }}</strong></p>
+                    <p><i class="fas fa-map-marker-alt text-primary me-2"></i> {{ vacancy.employer.company_address }}</p>
+                    <p class="mb-0"><i class="fas fa-user text-primary me-2"></i> HR vakili: {{ vacancy.employer.user.full_name }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

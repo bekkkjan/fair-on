@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profil - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-user me-2"></i> Profil</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Shaxsiy ma'lumotlar</h5>
+                        <hr>
+                        <p><strong>Ism:</strong> {{ user.first_name }}</p>
+                        <p><strong>Familiya:</strong> {{ user.last_name }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Foydalanuvchi turi:</strong> {{ user.get_user_type_display }}</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        {% if user.user_type == 'employer' and profile %}
+                            <h5>Tashkilot ma'lumotlari</h5>
+                            <hr>
+                            <p><strong>Tashkilot nomi:</strong> {{ profile.company_name }}</p>
+                            <p><strong>Tashkilot manzili:</strong> {{ profile.company_address }}</p>
+                            <p><strong>Lavozimi:</strong> {{ profile.position }}</p>
+                        {% elif user.user_type == 'candidate' and profile %}
+                            <h5>Qo'shimcha ma'lumotlar</h5>
+                            <hr>
+                            <p><strong>Otasining ismi:</strong> {{ profile.patronymic }}</p>
+                            <p><strong>Ma'lumoti:</strong> {{ profile.get_education_display }}</p>
+                            <p><strong>Mutaxassisligi:</strong> {{ profile.specialization }}</p>
+                            <p><strong>Yashash manzili:</strong> {{ profile.residential_address }}</p>
+                            <p><strong>Pasport raqami:</strong> {{ profile.passport_number }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{% url 'core:home' %}" class="btn btn-outline-primary">Bosh sahifaga qaytish</a>
+
+                    {% if user.user_type == 'employer' %}
+                        <a href="{% url 'jobs:employer_dashboard' %}" class="btn btn-primary">Boshqaruv paneliga o'tish</a>
+                    {% elif user.user_type == 'candidate' %}
+                        <a href="{% url 'jobs:candidate_dashboard' %}" class="btn btn-primary">Mening arizalarimga o'tish</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

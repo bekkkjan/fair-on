@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nomzod sifatida ro'yxatdan o'tish - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i> Nomzod sifatida ro'yxatdan o'tish</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <!-- Shaxsiy ma'lumotlar -->
+                        <div class="col-md-6">
+                            <h5>Shaxsiy ma'lumotlar</h5>
+                            <hr>
+                            <div class="mb-3">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.patronymic.id_for_label }}" class="form-label">{{ form.patronymic.label }}</label>
+                                {{ form.patronymic }}
+                                {% if form.patronymic.errors %}
+                                    <div class="text-danger">{{ form.patronymic.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Ma'lumot va manzil -->
+                        <div class="col-md-6">
+                            <h5>Ma'lumot va manzil</h5>
+                            <hr>
+                            <div class="mb-3">
+                                <label for="{{ form.education.id_for_label }}" class="form-label">{{ form.education.label }}</label>
+                                {{ form.education }}
+                                {% if form.education.errors %}
+                                    <div class="text-danger">{{ form.education.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.specialization.id_for_label }}" class="form-label">{{ form.specialization.label }}</label>
+                                {{ form.specialization }}
+                                {% if form.specialization.errors %}
+                                    <div class="text-danger">{{ form.specialization.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.residential_address.id_for_label }}" class="form-label">{{ form.residential_address.label }}</label>
+                                {{ form.residential_address }}
+                                {% if form.residential_address.errors %}
+                                    <div class="text-danger">{{ form.residential_address.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.passport_number.id_for_label }}" class="form-label">{{ form.passport_number.label }}</label>
+                                {{ form.passport_number }}
+                                {% if form.passport_number.errors %}
+                                    <div class="text-danger">{{ form.passport_number.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.passport_pdf.id_for_label }}" class="form-label">{{ form.passport_pdf.label }}</label>
+                                {{ form.passport_pdf }}
+                                {% if form.passport_pdf.errors %}
+                                    <div class="text-danger">{{ form.passport_pdf.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parol ma'lumotlari -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>Kirish ma'lumotlari</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.password1.id_for_label }}" class="form-label">{{ form.password1.label }}</label>
+                                        {{ form.password1 }}
+                                        {% if form.password1.errors %}
+                                            <div class="text-danger">{{ form.password1.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.password2.id_for_label }}" class="form-label">{{ form.password2.label }}</label>
+                                        {{ form.password2 }}
+                                        {% if form.password2.errors %}
+                                            <div class="text-danger">{{ form.password2.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">Ro'yxatdan o'tish</button>
+                    </div>
+                </form>
+                <hr>
+                <div class="text-center">
+                    <p>Allaqachon ro'yxatdan o'tganmisiz?</p>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">Tizimga kirish</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

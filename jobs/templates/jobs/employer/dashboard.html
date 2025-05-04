@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Boshqaruv paneli - CorruptiNO{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Boshqaruv paneli</h2>
+            <p class="lead">{{ user.employer_profile.company_name }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'jobs:vacancy_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Yangi vakansiya e'lon qilish
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistika kartochkalari -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Jami vakansiyalar</h5>
+                            <h2 class="display-4">{{ total_vacancies|default:'0' }}</h2>
+                        </div>
+                        <div>
+                            <i class="fas fa-briefcase fa-3x text-primary"></i>
+                        </div>
+                    </div>
+                    <a href="{% url 'jobs:vacancy_list' %}" class="btn btn-sm btn-outline-primary mt-3">Barcha vakansiyalar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 border-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Jami arizalar</h5>
+                            <h2 class="display-4">{{ total_applications|default:'0' }}</h2>
+                        </div>
+                        <div>
+                            <i class="fas fa-users fa-3x text-success"></i>
+                        </div>
+                    </div>
+                    <a href="{% url 'jobs:all_applications' %}" class="btn btn-sm btn-outline-success mt-3">Barcha arizalar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 border-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Test savollari</h5>
+                            <h2 class="display-4">{{ total_questions|default:'0' }}</h2>
+                        </div>
+                        <div>
+                            <i class="fas fa-question-circle fa-3x text-info"></i>
+                        </div>
+                    </div>
+                    <a href="{% url 'jobs:test_question_list' %}" class="btn btn-sm btn-outline-info mt-3">Test savollari</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- So'nggi vakansiyalar -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i> So'nggi e'lon qilingan vakansiyalar</h5>
+                </div>
+                <div class="card-body">
+                    {% if vacancies %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Lavozim</th>
+                                        <th>Kategoriya</th>
+                                        <th>Maosh</th>
+                                        <th>Joylashuv</th>
+                                        <th>Sana</th>
+                                        <th>Holati</th>
+                                        <th>Amallar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vacancy in vacancies %}
+                                        <tr>
+                                            <td>{{ vacancy.title }}</td>
+                                            <td>{{ vacancy.category.name }}</td>
+                                            <td>{{ vacancy.salary_min }} - {{ vacancy.salary_max }}</td>
+                                            <td>{{ vacancy.location }}</td>
+                                            <td>{{ vacancy.created_at|date:"d.m.Y" }}</td>
+                                            <td>{% if vacancy.is_active %}<span class="badge bg-success">Faol</span>{% else %}<span class="badge bg-secondary">Nofaol</span>{% endif %}</td>
+                                            <td>
+                                                <a href="{% url 'jobs:vacancy_applications' vacancy_id=vacancy.id %}" class="btn btn-sm btn-outline-primary" title="Arizalarni ko'rish">
+                                                    <i class="fas fa-users"></i>
+                                                </a>
+                                                <a href="{% url 'jobs:vacancy_update' pk=vacancy.id %}" class="btn btn-sm btn-outline-info" title="Tahrirlash">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end">
+                            <a href="{% url 'jobs:vacancy_list' %}" class="btn btn-primary">Barcha vakansiyalarni ko'rish</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p>Hozircha vakansiyalar mavjud emas. Yangi vakansiya e'lon qilish uchun yuqoridagi tugmadan foydalaning.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- So'nggi arizalar -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i> So'nggi arizalar</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_applications %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nomzod</th>
+                                        <th>Vakansiya</th>
+                                        <th>Ariza sanasi</th>
+                                        <th>Holati</th>
+                                        <th>Test natijalari</th>
+                                        <th>Amallar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for application in recent_applications %}
+                                        <tr>
+                                            <td>{{ application.candidate.user.full_name }}</td>
+                                            <td>{{ application.vacancy.title }}</td>
+                                            <td>{{ application.created_at|date:"d.m.Y" }}</td>
+                                            <td>
+                                                {% if application.status == 'applied' %}
+                                                    <span class="badge bg-secondary">Ariza topshirilgan</span>
+                                                {% elif application.status == 'testing' %}
+                                                    <span class="badge bg-warning">Testdan o'tish jarayonida</span>
+                                                {% elif application.status == 'completed' %}
+                                                    <span class="badge bg-info">Testlar yakunlangan</span>
+                                                {% elif application.status == 'reviewed' %}
+                                                    <span class="badge bg-primary">Ko'rib chiqilgan</span>
+                                                {% elif application.status == 'accepted' %}
+                                                    <span class="badge bg-success">Qabul qilingan</span>
+                                                {% elif application.status == 'rejected' %}
+                                                    <span class="badge bg-danger">Rad etilgan</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if application.status == 'completed' or application.status == 'reviewed' or application.status == 'accepted' %}
+                                                    <span class="badge bg-success">{{ application.total_score }} ball</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Yakunlanmagan</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'jobs:employer_application_detail' pk=application.id %}" class="btn btn-sm btn-outline-primary" title="Batafsil ko'rish">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end">
+                            <a href="{% url 'jobs:all_applications' %}" class="btn btn-success">Barcha arizalarni ko'rish</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p>Hozircha arizalar mavjud emas.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
